@@ -1,0 +1,15 @@
+{
+  "type": "record",
+  "namespace": "io.confluent.developer",
+  "name": "StudentMessageOutput",
+  "fields": [
+    {
+      "name": "uuid",
+      "type": "string"
+    },
+    {
+      "name": "consumerName",
+      "type": "string"
+    }
+  ]
+}

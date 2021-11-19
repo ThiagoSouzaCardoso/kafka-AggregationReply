@@ -1,0 +1,17 @@
+{
+  "namespace": "io.confluent.developer",
+  "type": "record",
+  "name": "StudentMessageInput",
+  "fields": [
+    {
+      "name": "name",
+      "type": "string",
+      "avro.java.string": "String"
+    },
+    {
+      "name": "surname",
+      "type": "string",
+      "avro.java.string": "String"
+    }
+  ]
+}
