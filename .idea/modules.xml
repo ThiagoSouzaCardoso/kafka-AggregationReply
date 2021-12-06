@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/consumer1/consumer.iml" filepath="$PROJECT_DIR$/consumer1/consumer.iml" />
+      <module fileurl="file://$PROJECT_DIR$/consumer2/consumer2.iml" filepath="$PROJECT_DIR$/consumer2/consumer2.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/kafka-AggregationReply.iml" filepath="$PROJECT_DIR$/.idea/kafka-AggregationReply.iml" />
+      <module fileurl="file://$PROJECT_DIR$/producer/producer.iml" filepath="$PROJECT_DIR$/producer/producer.iml" />
+    </modules>
+  </component>
+</project>

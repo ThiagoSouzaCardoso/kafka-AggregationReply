@@ -25,13 +25,6 @@
             <groupId>org.springframework.kafka</groupId>
             <artifactId>spring-kafka</artifactId>
         </dependency>
-
-<!--        <dependency>-->
-<!--            <groupId>org.springframework.boot</groupId>-->
-<!--            <artifactId>spring-boot-devtools</artifactId>-->
-<!--            <scope>runtime</scope>-->
-<!--            <optional>true</optional>-->
-<!--        </dependency>-->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
@@ -82,30 +75,11 @@
                         </goals>
                         <configuration>
                             <sourceDirectory>${project.basedir}/src/main/resources/avro</sourceDirectory>
+                            <outputDirectory>${project.basedir}/src/main/java</outputDirectory>
                             <stringType>String</stringType>
                             <createSetters>false</createSetters>
                             <enableDecimalLogicalType>true</enableDecimalLogicalType>
                             <fieldVisibility>private</fieldVisibility>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <!--force discovery of generated classes -->
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>build-helper-maven-plugin</artifactId>
-                <version>3.0.0</version>
-                <executions>
-                    <execution>
-                        <id>add-source</id>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>add-source</goal>
-                        </goals>
-                        <configuration>
-                            <sources>
-                                <source>target/generated-sources/avro</source>
-                            </sources>
                         </configuration>
                     </execution>
                 </executions>
