@@ -93,7 +93,10 @@ public class StudentRepositoryImpl implements StudentRepository {
         kafkaTemplate.send(record);
     }
 
-    @KafkaListener(topics = "${kafka.topic.requestreply-sse-topic}", groupId = "sse-dispatcher")
+    // Unique per instance, same reasoning as replyContainer() in KafkaConfig: each pod
+    // must see every reply on this topic since the pending correlation ids it's tracking
+    // only exist in its own memory.
+    @KafkaListener(topics = "${kafka.topic.requestreply-sse-topic}", groupId = "sse-dispatcher-${kafka.consumer.instance-id}")
     public void onSseReply(ConsumerRecord<String, StudentMessageOutput> record) {
         Header correlationHeader = record.headers().lastHeader(KafkaHeaders.CORRELATION_ID);
         if (correlationHeader == null) {

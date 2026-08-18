@@ -30,6 +30,9 @@ public class KafkaConfig {
     @Value("${kafka.topic.requestreply-topic}")
     private String requestReplyTopic;
 
+    @Value("${kafka.consumer.instance-id}")
+    private String instanceId;
+
 
     @Bean
     public AggregatingReplyingKafkaTemplate<String, StudentMessageInput, StudentMessageOutput>
@@ -40,6 +43,10 @@ public class KafkaConfig {
         AggregatingReplyingKafkaTemplate kafkaTemplate = new AggregatingReplyingKafkaTemplate(pf, container, releaseStrategy);
         kafkaTemplate.setDefaultReplyTimeout(Duration.ofSeconds(10));
         kafkaTemplate.setReturnPartialOnTimeout(true);
+        // Every instance must see every reply on the shared topic instead of relying on
+        // Kafka's partition assignment to route a reply back to the instance that sent
+        // the request - see replyContainer() for the matching per-instance group id.
+        kafkaTemplate.setSharedReplyTopic(true);
         return kafkaTemplate;
     }
 
@@ -59,6 +66,12 @@ public class KafkaConfig {
     public KafkaMessageListenerContainer<String, StudentMessageOutput> replyContainer(ConsumerFactory<String, StudentMessageInput> cf) {
         ContainerProperties containerProperties = new ContainerProperties(requestReplyTopic);
         containerProperties.setAckMode(ContainerProperties.AckMode.MANUAL_IMMEDIATE);
+        // Unique per instance: with a shared group id, Kafka would split the reply
+        // topic's partitions across pods, so a reply could land on a pod other than
+        // the one whose in-memory future is waiting for it. A unique group id makes
+        // every instance its own group, so every instance gets every reply and can
+        // match it against its own pending correlation ids.
+        containerProperties.setGroupId("group_id2-" + instanceId);
         return new KafkaMessageListenerContainer(cf, containerProperties);
     }
 
