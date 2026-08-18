@@ -31,7 +31,7 @@ public class StudentRepositoryImpl implements StudentRepository {
 
     private final AggregatingReplyingKafkaTemplate<String, StudentMessageInput, StudentMessageOutput> kafkaTemplate;
     private final String requestTopic;
-    private final String requestReplySseTopic;
+    private final String replyTopic;
     private final int expectedRepliesCount;
     private final long streamReplyTimeoutSeconds;
     private final ScheduledExecutorService scheduler;
@@ -40,13 +40,13 @@ public class StudentRepositoryImpl implements StudentRepository {
 
     public StudentRepositoryImpl(AggregatingReplyingKafkaTemplate<String, StudentMessageInput, StudentMessageOutput> kafkaTemplate,
                                   String requestTopic,
-                                  String requestReplySseTopic,
+                                  String replyTopic,
                                   int expectedRepliesCount,
                                   long streamReplyTimeoutSeconds,
                                   ScheduledExecutorService scheduler) {
         this.kafkaTemplate = kafkaTemplate;
         this.requestTopic = requestTopic;
-        this.requestReplySseTopic = requestReplySseTopic;
+        this.replyTopic = replyTopic;
         this.expectedRepliesCount = expectedRepliesCount;
         this.streamReplyTimeoutSeconds = streamReplyTimeoutSeconds;
         this.scheduler = scheduler;
@@ -84,7 +84,7 @@ public class StudentRepositoryImpl implements StudentRepository {
 
         ProducerRecord<String, StudentMessageInput> record = new ProducerRecord<>(requestTopic, studentInput);
         record.headers().add(new RecordHeader(KafkaHeaders.CORRELATION_ID, correlationId.getBytes(StandardCharsets.UTF_8)));
-        record.headers().add(new RecordHeader(KafkaHeaders.REPLY_TOPIC, requestReplySseTopic.getBytes(StandardCharsets.UTF_8)));
+        record.headers().add(new RecordHeader(KafkaHeaders.REPLY_TOPIC, replyTopic.getBytes(StandardCharsets.UTF_8)));
 
         ScheduledFuture<?> timeoutTask = scheduler.schedule(() -> complete(correlationId),
                 streamReplyTimeoutSeconds, TimeUnit.SECONDS);
@@ -96,7 +96,7 @@ public class StudentRepositoryImpl implements StudentRepository {
     // Unique per instance, same reasoning as replyContainer() in KafkaConfig: each pod
     // must see every reply on this topic since the pending correlation ids it's tracking
     // only exist in its own memory.
-    @KafkaListener(topics = "${kafka.topic.requestreply-sse-topic}", groupId = "sse-dispatcher-${kafka.consumer.instance-id}")
+    @KafkaListener(topics = "${kafka.topic.requestreply-topic}", groupId = "sse-dispatcher-${kafka.consumer.instance-id}")
     public void onSseReply(ConsumerRecord<String, StudentMessageOutput> record) {
         Header correlationHeader = record.headers().lastHeader(KafkaHeaders.CORRELATION_ID);
         if (correlationHeader == null) {

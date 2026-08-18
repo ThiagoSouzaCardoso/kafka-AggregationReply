@@ -18,11 +18,11 @@ public class RepositoryConfig {
     @Bean
     public StudentRepository studentRepository(AggregatingReplyingKafkaTemplate<String, StudentMessageInput, StudentMessageOutput> kafkaTemplate,
                                                @Value("${kafka.topic.request-topic}") String requestTopic,
-                                               @Value("${kafka.topic.requestreply-sse-topic}") String requestReplySseTopic,
+                                               @Value("${kafka.topic.requestreply-topic}") String replyTopic,
                                                @Value("${kafka.consumers.expected-count}") int expectedRepliesCount,
                                                @Value("${kafka.consumers.stream-reply-timeout-seconds}") long streamReplyTimeoutSeconds,
                                                ScheduledExecutorService sseTimeoutScheduler){
-        return new StudentRepositoryImpl(kafkaTemplate, requestTopic, requestReplySseTopic,
+        return new StudentRepositoryImpl(kafkaTemplate, requestTopic, replyTopic,
                 expectedRepliesCount, streamReplyTimeoutSeconds, sseTimeoutScheduler);
     }
 

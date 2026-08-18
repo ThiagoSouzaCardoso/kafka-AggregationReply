@@ -53,7 +53,6 @@ services:
       cub kafka-ready -b broker:29092 1 60
       kafka-topics --bootstrap-server broker:29092 --create --if-not-exists --topic request-topic --partitions 6 --replication-factor 1
       kafka-topics --bootstrap-server broker:29092 --create --if-not-exists --topic requestreply-topic --partitions 6 --replication-factor 1
-      kafka-topics --bootstrap-server broker:29092 --create --if-not-exists --topic requestreply-sse-topic --partitions 6 --replication-factor 1
       "
     restart: "no"
 
