@@ -2,14 +2,12 @@ package com.example.producer.configurations;
 
 import io.confluent.developer.StudentMessageInput;
 import io.confluent.developer.StudentMessageOutput;
-import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.config.KafkaListenerContainerFactory;
-import org.springframework.kafka.config.TopicBuilder;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
@@ -35,32 +33,6 @@ public class KafkaConfig {
     @Value("${kafka.consumer.instance-id}")
     private String instanceId;
 
-
-    // Topics are auto-created with 1 partition by default (no KAFKA_NUM_PARTITIONS on
-    // the broker), which caps request-topic's consumers - and every reply topic's
-    // per-instance consumer concurrency - at 1 processing thread no matter how many
-    // pods are running. These beans size them explicitly; KafkaAdmin creates the topic
-    // if missing or raises its partition count if it already exists with fewer.
-    @Bean
-    public NewTopic requestTopic(@Value("${kafka.topic.request-topic}") String name,
-                                  @Value("${kafka.topic.partitions}") int partitions,
-                                  @Value("${kafka.topic.replication-factor}") short replicationFactor) {
-        return TopicBuilder.name(name).partitions(partitions).replicas(replicationFactor).build();
-    }
-
-    @Bean
-    public NewTopic requestReplyTopicDefinition(@Value("${kafka.topic.requestreply-topic}") String name,
-                                                 @Value("${kafka.topic.partitions}") int partitions,
-                                                 @Value("${kafka.topic.replication-factor}") short replicationFactor) {
-        return TopicBuilder.name(name).partitions(partitions).replicas(replicationFactor).build();
-    }
-
-    @Bean
-    public NewTopic requestReplySseTopicDefinition(@Value("${kafka.topic.requestreply-sse-topic}") String name,
-                                                    @Value("${kafka.topic.partitions}") int partitions,
-                                                    @Value("${kafka.topic.replication-factor}") short replicationFactor) {
-        return TopicBuilder.name(name).partitions(partitions).replicas(replicationFactor).build();
-    }
 
     @Bean
     public AggregatingReplyingKafkaTemplate<String, StudentMessageInput, StudentMessageOutput>

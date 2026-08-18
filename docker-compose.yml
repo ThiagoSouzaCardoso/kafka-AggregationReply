@@ -41,6 +41,22 @@ services:
     command: ["tail", "-f", "/dev/null"]
     network_mode: "host"
 
+  kafka-topics-init:
+    image: confluentinc/cp-kafka:5.4.0
+    hostname: kafka-topics-init
+    container_name: kafka-topics-init
+    depends_on:
+      - broker
+    entrypoint: ["bash", "-c"]
+    command: |
+      "
+      cub kafka-ready -b broker:29092 1 60
+      kafka-topics --bootstrap-server broker:29092 --create --if-not-exists --topic request-topic --partitions 6 --replication-factor 1
+      kafka-topics --bootstrap-server broker:29092 --create --if-not-exists --topic requestreply-topic --partitions 6 --replication-factor 1
+      kafka-topics --bootstrap-server broker:29092 --create --if-not-exists --topic requestreply-sse-topic --partitions 6 --replication-factor 1
+      "
+    restart: "no"
+
   schema-registry:
     image: confluentinc/cp-schema-registry:5.4.0
     hostname: schema-registry
