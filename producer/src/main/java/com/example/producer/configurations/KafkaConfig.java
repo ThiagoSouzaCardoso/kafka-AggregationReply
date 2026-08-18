@@ -52,7 +52,7 @@ public class KafkaConfig {
 
     @Bean
     public BiPredicate<Collection<ConsumerRecord<String, StudentMessageOutput>>, Boolean> releaseStrategy(
-            @Value("${seila}") int releaseSize){
+            @Value("${kafka.consumers.expected-count}") int releaseSize){
         AtomicInteger releaseCount = new AtomicInteger();
       return  (list, timeout) -> {
             releaseCount.incrementAndGet();
