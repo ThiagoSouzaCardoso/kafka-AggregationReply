@@ -8,16 +8,27 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.requestreply.AggregatingReplyingKafkaTemplate;
-import org.springframework.kafka.requestreply.ReplyingKafkaTemplate;
+
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 
 @Configuration
 public class RepositoryConfig {
 
     @Bean
-    public StudentRepository studentRepository(AggregatingReplyingKafkaTemplate<String, StudentMessageInput, StudentMessageOutput> kafkaTemplate ,
-                                               @Value("${kafka.topic.request-topic}") String requestTopic){
-        return new StudentRepositoryImpl(kafkaTemplate,requestTopic);
+    public StudentRepository studentRepository(AggregatingReplyingKafkaTemplate<String, StudentMessageInput, StudentMessageOutput> kafkaTemplate,
+                                               @Value("${kafka.topic.request-topic}") String requestTopic,
+                                               @Value("${kafka.topic.requestreply-topic}") String replyTopic,
+                                               @Value("${kafka.consumers.expected-count}") int expectedRepliesCount,
+                                               @Value("${kafka.consumers.stream-reply-timeout-seconds}") long streamReplyTimeoutSeconds,
+                                               ScheduledExecutorService sseTimeoutScheduler){
+        return new StudentRepositoryImpl(kafkaTemplate, requestTopic, replyTopic,
+                expectedRepliesCount, streamReplyTimeoutSeconds, sseTimeoutScheduler);
     }
 
+    @Bean(destroyMethod = "shutdown")
+    public ScheduledExecutorService sseTimeoutScheduler() {
+        return Executors.newScheduledThreadPool(2);
+    }
 
 }

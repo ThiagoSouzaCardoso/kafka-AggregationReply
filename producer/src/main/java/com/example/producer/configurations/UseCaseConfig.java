@@ -2,6 +2,7 @@ package com.example.producer.configurations;
 
 import com.example.producer.core.facade.UseCaseFacade;
 import com.example.producer.core.ports.SaveStudentsUseCase;
+import com.example.producer.core.ports.StreamStudentsUseCase;
 import com.example.producer.core.ports.StudentRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,8 +15,9 @@ public class UseCaseConfig {
         return UseCaseFacade.saveStudentsUseCase(studentRepository);
     }
 
-
-
-
+    @Bean
+    public StreamStudentsUseCase streamStudentsUseCase(StudentRepository studentRepository){
+        return UseCaseFacade.streamStudentsUseCase(studentRepository);
+    }
 
 }

@@ -9,4 +9,6 @@ public interface StudentRepository {
 
     List<StudentsConsumers> save(Student student);
 
+    void save(Student student, StudentReplyListener listener);
+
 }
